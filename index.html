@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/layout.css" />
+    <script src="js/greensock/gsap.min.js"></script>
   </head>
   <body>
     <header id="header">
@@ -25,32 +26,44 @@
     </div>
   </body>
   <script>
-    const wordArray = ["호랑이", "이발소", "소방서", "서울역"];
+    const firstWordArray = ["기러기", "호랑이", "소나무", "기관사"];
+    const wordArray = [];
     const inputWord = document.querySelector("#inputWord");
     const wordList = document.querySelector("#wordList ul");
-    wordArray.forEach(function (item, index) {
-      wordList.innerHTML += `<li>${item}</li>`;
-    });
+    wordArray.push(firstWordArray[Math.floor(Math.random() * firstWordArray.length)]);
+    const makeWordList = function () {
+      wordArray.forEach(function (item, index) {
+        wordList.innerHTML += `<li>${item}</li>`;
+      });
+    };
+    makeWordList();
     const keyupFunc = function (e) {
-      //console.log("키가 눌러지고 있습니다.");
-      //console.log(inputWord.value);
-      //console.log(e);
-
       if (e.keyCode === 13) {
-        console.log(inputWord.value);
-        const firstChar = inputWord.value.charAt(0);
+        //console.log(inputWord.value);
+        const inputWordValue = inputWord.value;
+        const firstChar = inputWordValue.charAt(0);
         const lastChar = wordArray[wordArray.length - 1].charAt(2);
-        if (firstChar === lastChar) {
-          wordArray.push(inputWord.value);
+        inputWord.removeEventListener("keyup", keyupFunc);
+        if (firstChar === lastChar && !wordArray.includes(inputWordValue)) {
+          wordArray.push(inputWordValue);
           wordList.innerHTML = "";
           inputWord.value = "";
           inputWord.focus();
-          wordArray.forEach(function (item, index) {
-            wordList.innerHTML += `<li>${item}</li>`;
-          });
+          makeWordList();
+          init();
+        } else {
+          inputWord.value = "";
+          inputWord.focus();
+          gsap.from("#inputWord", { x: 100, duration: 0.5, ease: "elastic(1,0.3)", onComplete: init });
         }
       }
     };
-    inputWord.addEventListener("keyup", keyupFunc);
+    const init = function () {
+      inputWord.addEventListener("keyup", keyupFunc);
+    };
+    init();
+    // 3글자가 아니면 틀린걸로 처리...
+    // 5초안에 입력 못하면 틀린걸로 처리
+    // 30개 채우면 성공메세지 띄우기...
   </script>
 </html>
